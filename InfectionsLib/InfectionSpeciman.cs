@@ -25,7 +25,18 @@ namespace InfectionsLib
     public int Balance
     {
       get { return this.balance; }
-      set { if (!IsDead) { this.balance = value; } }
+      set
+      {
+        if (!IsDead)
+        {
+          if (this.balance >= 0 && value < 0)
+          {
+            Logger.Instance.Add("infection", this.GetHashCode().ToString(), "Dead");
+          }
+          Logger.Instance.Add("infection", this.GetHashCode().ToString(), "New Balance: " + value);
+          this.balance = value;
+        }
+      }
     }
 
     public bool IsDead

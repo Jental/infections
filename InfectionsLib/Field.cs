@@ -49,8 +49,10 @@ namespace InfectionsLib
     {
       Thread t = new Thread(() =>
       {
+        Logger.Instance.Add("global", "", "----Start----");
         while (true)
         {
+          Logger.Instance.Add("global", "", "-----");
           for (int i = 0; i < SIZE_X; i++)
           {
             for (int j = 0; j < SIZE_Y; j++)
@@ -60,12 +62,17 @@ namespace InfectionsLib
               {
                 foreach (InfectionSpeciman inf in v.Infections)
                 {
+                  Logger.Instance.Add("infection", inf.GetHashCode().ToString(), String.Format("On victim cell: {0}x{1}", i, j));
+
                   int eaten = Math.Min(v.Health, inf.Type.Agression);
                   v.Health -= eaten;
                   inf.Balance += eaten;
+                  Logger.Instance.Add("infection", inf.GetHashCode().ToString(), "Eaten: " + eaten);
 
                   inf.Balance -= Consumption.ofSize(inf.Type);  // self-feeding
                   inf.Balance -= Consumption.ofStore(inf.Type); // each store slot consumes one point (doesn't store, just consume)
+                  Logger.Instance.Add("infection", inf.GetHashCode().ToString(), "Spent on self: " + Consumption.ofSize(inf.Type));
+                  Logger.Instance.Add("infection", inf.GetHashCode().ToString(), "Spent on store: " + Consumption.ofStore(inf.Type));
 
                   inf.SpreadCounter++;
                   if (!inf.IsDead && inf.IsSpreadTime) // infecting random neighbours
@@ -76,9 +83,11 @@ namespace InfectionsLib
                       if (k < nb.Count)
                       {
                         inf.Balance -= Consumption.ofSpread(inf.Type, nb[k].Value);
+                        Logger.Instance.Add("infection", inf.GetHashCode().ToString(), "Spent on spread: " + Consumption.ofSpread(inf.Type, nb[k].Value));
                         if (!inf.IsDead)
                         {
                           nb[k].Key.Infect(new InfectionSpeciman(inf.Type));
+                          Logger.Instance.Add("infection", inf.GetHashCode().ToString(), String.Format("Spread to victim with health: {0}", nb[k].Key.Health));
                         }
                         else
                         {
@@ -112,6 +121,7 @@ namespace InfectionsLib
 
     public void Stop()
     {
+      Logger.Instance.Add("global", "", "----Stop----");
       this.stopEvent.Set();
     }
 

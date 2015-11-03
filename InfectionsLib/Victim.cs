@@ -31,6 +31,10 @@ namespace InfectionsLib
       {
         if (value < 0)
         {
+          if (this.health > 0)
+          {
+            Logger.Instance.Add("victim", this.GetHashCode().ToString(), "Dead");
+          }
           this.health = 0;
         }
         else
@@ -42,6 +46,7 @@ namespace InfectionsLib
 
     public void Infect(InfectionSpeciman inf)
     {
+      Logger.Instance.Add("victim", this.GetHashCode().ToString(), String.Format("Infected with {0}", inf.GetHashCode()));
       this.infections.Add(inf);
     }
 

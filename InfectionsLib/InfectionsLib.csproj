@@ -43,6 +43,7 @@
     <Compile Include="Field.cs" />
     <Compile Include="Infection.cs" />
     <Compile Include="InfectionSpeciman.cs" />
+    <Compile Include="Logger.cs" />
     <Compile Include="Misc.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Victim.cs" />
