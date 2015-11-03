@@ -50,9 +50,13 @@ namespace InfectionsLib
       Thread t = new Thread(() =>
       {
         Logger.Instance.Add("global", "", "----Start----");
-        while (true)
+        bool activityPresent = true;
+        while (activityPresent)
         {
           Logger.Instance.Add("global", "", "-----");
+
+          activityPresent = false;
+
           for (int i = 0; i < SIZE_X; i++)
           {
             for (int j = 0; j < SIZE_Y; j++)
@@ -62,6 +66,12 @@ namespace InfectionsLib
               {
                 foreach (InfectionSpeciman inf in v.Infections)
                 {
+                  if (inf.IsDead)
+                  {
+                    continue;
+                  }
+                  activityPresent = true;
+
                   Logger.Instance.Add("infection", inf.GetHashCode().ToString(), String.Format("On victim cell: {0}x{1}", i, j));
 
                   int eaten = Math.Min(v.Health, inf.Type.Agression);
@@ -102,6 +112,15 @@ namespace InfectionsLib
                     inf.Balance = Math.Min(inf.Balance, inf.Type.StoreSize);
                   }
                 }
+
+                if (!v.IsDead)
+                {
+                  List<InfectionSpeciman> dead = v.Infections.Where((inf) => inf.IsDead).ToList();
+                  foreach (var inf in dead)
+                  {
+                    v.Cure(inf);
+                  }
+                }
               }
             }
           }
@@ -114,6 +133,11 @@ namespace InfectionsLib
           if (this.stopEvent.WaitOne(Field.STEP_TIME)) {
             break;
           }
+        }
+
+        if (this.FieldProgressEvent != null)
+        {
+          this.FieldProgressEvent();
         }
       });
       t.Start();

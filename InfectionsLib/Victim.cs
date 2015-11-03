@@ -50,6 +50,12 @@ namespace InfectionsLib
       this.infections.Add(inf);
     }
 
+    public void Cure(InfectionSpeciman inf)
+    {
+      Logger.Instance.Add("victim", this.GetHashCode().ToString(), String.Format("Cured from {0}", inf.GetHashCode()));
+      this.infections.Remove(inf);
+    }
+
     public IEnumerable<InfectionSpeciman> Infections
     {
       get { return this.infections; }
