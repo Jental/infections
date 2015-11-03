@@ -1,0 +1,110 @@
+﻿using InfectionsLib;
+using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Data;
+using System.Drawing;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.Windows.Forms;
+
+namespace Infections
+{
+  public partial class Form1 : Form
+  {
+    private const int FIELD_ITEM_SIZE = 10;
+
+    Field field;
+    Dictionary<Infection, Color> infections = new Dictionary<Infection, Color>();
+
+    public Form1()
+    {
+      InitializeComponent();
+      Random rand = new Random();
+
+      this.field = new Field();
+      Infection inf1 = new Infection()
+      {
+        Size = 5,
+        StoreSize = 5,
+        Agression = 12,
+        SpreadSpeed = 3,
+        SpreadDistance = 1,
+        SpeadArea = 1
+      };
+      InfectionSpeciman s1 = new InfectionSpeciman(inf1);
+      this.infections.Add(inf1, Color.Red);
+      field.Data[rand.Next(0, Field.SIZE_X), rand.Next(0, Field.SIZE_Y)].Infect(s1);
+
+      Infection inf2 = new Infection()
+      {
+        Size = 3,
+        StoreSize = 7,
+        Agression = 15,
+        SpreadSpeed = 3,
+        SpreadDistance = 2,
+        SpeadArea = 2
+      };
+      this.infections.Add(inf2, Color.Green);
+      InfectionSpeciman s2 = new InfectionSpeciman(inf2);
+      field.Data[rand.Next(0, Field.SIZE_X), rand.Next(0, Field.SIZE_Y)].Infect(s2);
+
+      field.FieldProgressEvent += field_FieldProgressEvent;
+    }
+
+    private void field_FieldProgressEvent()
+    {
+      this.drawField();
+    }
+
+    private void button1_Click(object sender, EventArgs e)
+    {
+      this.drawField();
+      this.field.Start();
+    }
+
+    private void drawField()
+    {
+      int infectionOffset = 3;
+
+      using (Graphics g = this.panel1.CreateGraphics())
+      {
+        g.Clear(Color.White);
+
+        for (int i = 0; i < Field.SIZE_X; i++)
+        {
+          for (int j = 0; j < Field.SIZE_Y; j++)
+          {
+            Victim v = this.field.Data[i, j];
+            int colorComponent = 255 * v.Health / (Field.MAX_HEALTH + 1);
+
+            if (v.IsDead)
+            {
+              using (Pen p = new Pen(new SolidBrush(Color.Black)))
+              {
+                g.DrawLine(p, i * FIELD_ITEM_SIZE, j * FIELD_ITEM_SIZE, i * FIELD_ITEM_SIZE + FIELD_ITEM_SIZE - 1, j * FIELD_ITEM_SIZE + FIELD_ITEM_SIZE -1);
+                g.DrawLine(p, i * FIELD_ITEM_SIZE, j * FIELD_ITEM_SIZE + FIELD_ITEM_SIZE - 1, i * FIELD_ITEM_SIZE + FIELD_ITEM_SIZE -1, j * FIELD_ITEM_SIZE);
+              }
+            }
+            else
+            {
+              using (Brush b = new SolidBrush(Color.FromArgb(colorComponent, colorComponent, colorComponent)))
+              {
+                g.FillRectangle(b, i * FIELD_ITEM_SIZE, j * FIELD_ITEM_SIZE, FIELD_ITEM_SIZE, FIELD_ITEM_SIZE);
+              }
+            }
+
+            if (v.IsInfected)
+            {
+              using (Brush b = new SolidBrush(this.infections[v.Infections.ElementAt(0).Type]))
+              {
+                g.FillRectangle(b, i * FIELD_ITEM_SIZE + infectionOffset, j * FIELD_ITEM_SIZE + infectionOffset, FIELD_ITEM_SIZE - 2 * infectionOffset, FIELD_ITEM_SIZE - 2 * infectionOffset);
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
