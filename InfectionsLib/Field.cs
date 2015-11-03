@@ -11,7 +11,7 @@ namespace InfectionsLib
   {
     public const int SIZE_X = 50;
     public const int SIZE_Y = 50;
-    public const int MIN_HEALTH = 10;
+    public const int MIN_HEALTH = 20;
     public const int MAX_HEALTH = 100;
 
     private const int STEP_TIME = 1000;
@@ -64,22 +64,26 @@ namespace InfectionsLib
                   v.Health -= eaten;
                   inf.Balance += eaten;
 
-                  inf.Balance -= inf.Type.StoreSize; // each store slot consumes one point (doesn't store, just consume)
+                  inf.Balance -= Consumption.ofSize(inf.Type);  // self-feeding
+                  inf.Balance -= Consumption.ofStore(inf.Type); // each store slot consumes one point (doesn't store, just consume)
 
                   inf.SpreadCounter++;
-                  if (!inf.IsDead && inf.IsSpreadTime) // infecting random naighbours
+                  if (!inf.IsDead && inf.IsSpreadTime) // infecting random neighbours
                   {
-                    List<Victim> nb = this.getNeighbours(i, j, inf.Type.SpreadDistance).Where((v1) => !v1.IsInfected && !v1.IsDead && v1.Health < inf.Type.Size * 15).ToList().Shuffle();
+                    List<KeyValuePair<Victim, double>> nb = this.getNeighbours(i, j, inf.Type.SpreadDistance).Where((v1) => !v1.Key.IsInfected && !v1.Key.IsDead && v1.Key.Health < inf.Type.Size * 15).ToList().Shuffle();
                     for (int k = 0; k < inf.Type.SpeadArea; k++)
                     {
-                      inf.Balance -= inf.Type.Size;// *3;
-                      if (!inf.IsDead && k < nb.Count)
+                      if (k < nb.Count)
                       {
-                        nb[k].Infect(new InfectionSpeciman(inf.Type));
-                      }
-                      else
-                      {
-                        break;
+                        inf.Balance -= Consumption.ofSpread(inf.Type, nb[k].Value);
+                        if (!inf.IsDead)
+                        {
+                          nb[k].Key.Infect(new InfectionSpeciman(inf.Type));
+                        }
+                        else
+                        {
+                          break;
+                        }
                       }
                     }
                   }
@@ -111,15 +115,16 @@ namespace InfectionsLib
       this.stopEvent.Set();
     }
 
-    private IEnumerable<Victim> getNeighbours(int x, int y, int dist)
+    private IEnumerable<KeyValuePair<Victim, double>> getNeighbours(int x, int y, int dist)
     {
       double dist2 = Math.Pow(dist, 2);
       for (int i = Math.Max(0, x - dist); i <= Math.Min(Field.SIZE_X, x + dist); i++) {
         for (int j = Math.Max(0, y - dist); j <= Math.Min(Field.SIZE_Y, y + dist); j++)
         {
-          if (Math.Pow(x - i, 2) + Math.Pow(y - j, 2) <= dist2)
+          double adist = Math.Pow(x - i, 2) + Math.Pow(y - j, 2);
+          if (adist <= dist2)
           {
-            yield return this.data[i, j];
+            yield return new KeyValuePair<Victim, double>(this.data[i, j], Math.Sqrt(adist));
           }
         }
       }
