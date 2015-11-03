@@ -68,6 +68,11 @@ namespace Infections
     {
       int infectionOffset = 3;
 
+      if (this.IsDisposed || this.panel1.IsDisposed)
+      {
+        return;
+      }
+
       using (Graphics g = this.panel1.CreateGraphics())
       {
         g.Clear(Color.White);
@@ -105,6 +110,16 @@ namespace Infections
           }
         }
       }
+    }
+
+    private void button2_Click(object sender, EventArgs e)
+    {
+      this.field.Stop();
+    }
+
+    private void Form1_FormClosing(object sender, FormClosingEventArgs e)
+    {
+      this.field.Stop();
     }
   }
 }

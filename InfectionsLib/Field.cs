@@ -17,6 +17,7 @@ namespace InfectionsLib
     private const int STEP_TIME = 1000;
 
     private Victim[,] data = new Victim[Field.SIZE_X, Field.SIZE_Y];
+    private AutoResetEvent stopEvent = new AutoResetEvent(false);
 
     public delegate void FieldProgressEventhandler();
     public event FieldProgressEventhandler FieldProgressEvent;
@@ -96,10 +97,18 @@ namespace InfectionsLib
           {
             this.FieldProgressEvent();
           }
-          Thread.Sleep(Field.STEP_TIME);
+
+          if (this.stopEvent.WaitOne(Field.STEP_TIME)) {
+            break;
+          }
         }
       });
       t.Start();
+    }
+
+    public void Stop()
+    {
+      this.stopEvent.Set();
     }
 
     private IEnumerable<Victim> getNeighbours(int x, int y, int dist)
