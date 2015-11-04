@@ -18,6 +18,7 @@ namespace InfectionsLib
 
     private Victim[,] data = new Victim[Field.SIZE_X, Field.SIZE_Y];
     private AutoResetEvent stopEvent = new AutoResetEvent(false);
+    private int step = 0;
 
     public delegate void FieldProgressEventhandler();
     public event FieldProgressEventhandler FieldProgressEvent;
@@ -30,6 +31,10 @@ namespace InfectionsLib
     public Victim[,] Data
     {
       get { return this.data; }
+    }
+
+    public int Step {
+      get { return this.step; }
     }
 
     public void Generate()
@@ -87,7 +92,11 @@ namespace InfectionsLib
                   inf.SpreadCounter++;
                   if (!inf.IsDead && inf.IsSpreadTime) // infecting random neighbours
                   {
-                    List<KeyValuePair<Victim, double>> nb = this.getNeighbours(i, j, inf.Type.SpreadDistance).Where((v1) => !v1.Key.IsInfected && !v1.Key.IsDead && v1.Key.Health < inf.Type.Size * Consumption.POWER).ToList().Shuffle();
+                    List<KeyValuePair<Victim, double>> nb = 
+                      this.getNeighbours(i, j, inf.Type.SpreadDistance)
+                          .Where((v1) => !v1.Key.IsInfected && !v1.Key.IsDead && v1.Key.Health <= inf.Type.Size * Consumption.POWER)
+                          .ShuffleNeighbours((kvp) => kvp.Key.Health, 0.75)
+                          .ToList();
                     for (int k = 0; k < inf.Type.SpeadArea; k++)
                     {
                       if (k < nb.Count)
@@ -133,6 +142,7 @@ namespace InfectionsLib
           if (this.stopEvent.WaitOne(Field.STEP_TIME)) {
             break;
           }
+          this.step++;
         }
 
         if (this.FieldProgressEvent != null)

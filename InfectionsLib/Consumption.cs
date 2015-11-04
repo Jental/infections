@@ -8,7 +8,8 @@ namespace InfectionsLib
 {
   public static class Consumption
   {
-      public const int POWER= 300;
+    public const int POWER= 50;
+
     public static int ofSize(Infection inf)
     {
       return inf.Size;
