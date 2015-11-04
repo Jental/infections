@@ -8,6 +8,7 @@ namespace InfectionsLib
 {
   public static class Consumption
   {
+      public const int POWER= 300;
     public static int ofSize(Infection inf)
     {
       return inf.Size;
@@ -20,7 +21,7 @@ namespace InfectionsLib
 
     public static int ofSpread(Infection inf, double distance)
     {
-      return inf.Size * 2 + (int)Math.Ceiling(inf.Size * 0.5 * distance);
+        return inf.Size; // * 2 + (int)Math.Ceiling(inf.Size * 0.5 * distance);
     }
   }
 }

@@ -27,7 +27,7 @@ namespace Infections
       Infection inf1 = new Infection()
       {
         Size = 5,
-        StoreSize = 5,
+        StoreSize = 2,
         Agression = 12,
         SpreadSpeed = 3,
         SpreadDistance = 1,
@@ -35,14 +35,16 @@ namespace Infections
       };
       InfectionSpeciman s1 = new InfectionSpeciman(inf1);
       this.infections.Add(inf1, Color.Red);
-      field.Data[rand.Next(0, Field.SIZE_X), rand.Next(0, Field.SIZE_Y)].Infect(s1);
+      Victim v = field.Data[rand.Next(0, Field.SIZE_X), rand.Next(0, Field.SIZE_Y)];
+      //v.Health = Field.MAX_HEALTH;
+      v.Infect(s1);
 
       Infection inf2 = new Infection()
       {
-        Size = 3,
-        StoreSize = 7,
-        Agression = 15,
-        SpreadSpeed = 3,
+        Size = 1,
+        StoreSize = 4,
+        Agression = 9,
+        SpreadSpeed = 5,
         SpreadDistance = 2,
         SpeadArea = 2
       };
@@ -51,6 +53,19 @@ namespace Infections
       field.Data[rand.Next(0, Field.SIZE_X), rand.Next(0, Field.SIZE_Y)].Infect(s2);
 
       field.FieldProgressEvent += field_FieldProgressEvent;
+
+      Infection inf3 = new Infection()
+      {
+          Size = 1,
+          StoreSize = 2,
+          Agression = 5,
+          SpreadSpeed = 5,
+          SpreadDistance = 1,
+          SpeadArea = 1
+      };
+      this.infections.Add(inf3, Color.DarkOrange);
+      InfectionSpeciman s3 = new InfectionSpeciman(inf3);
+      field.Data[rand.Next(0, Field.SIZE_X), rand.Next(0, Field.SIZE_Y)].Infect(s3);
     }
 
     private void field_FieldProgressEvent()

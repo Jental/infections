@@ -11,7 +11,7 @@ namespace InfectionsLib
   {
     public const int SIZE_X = 50;
     public const int SIZE_Y = 50;
-    public const int MIN_HEALTH = 20;
+    public const int MIN_HEALTH = 1;
     public const int MAX_HEALTH = 100;
 
     private const int STEP_TIME = 1000;
@@ -87,7 +87,7 @@ namespace InfectionsLib
                   inf.SpreadCounter++;
                   if (!inf.IsDead && inf.IsSpreadTime) // infecting random neighbours
                   {
-                    List<KeyValuePair<Victim, double>> nb = this.getNeighbours(i, j, inf.Type.SpreadDistance).Where((v1) => !v1.Key.IsInfected && !v1.Key.IsDead && v1.Key.Health < inf.Type.Size * 15).ToList().Shuffle();
+                    List<KeyValuePair<Victim, double>> nb = this.getNeighbours(i, j, inf.Type.SpreadDistance).Where((v1) => !v1.Key.IsInfected && !v1.Key.IsDead && v1.Key.Health < inf.Type.Size * Consumption.POWER).ToList().Shuffle();
                     for (int k = 0; k < inf.Type.SpeadArea; k++)
                     {
                       if (k < nb.Count)
@@ -152,8 +152,8 @@ namespace InfectionsLib
     private IEnumerable<KeyValuePair<Victim, double>> getNeighbours(int x, int y, int dist)
     {
       double dist2 = Math.Pow(dist, 2);
-      for (int i = Math.Max(0, x - dist); i <= Math.Min(Field.SIZE_X, x + dist); i++) {
-        for (int j = Math.Max(0, y - dist); j <= Math.Min(Field.SIZE_Y, y + dist); j++)
+      for (int i = Math.Max(0, x - dist); i <= Math.Min(Field.SIZE_X - 1, x + dist); i++) {
+        for (int j = Math.Max(0, y - dist); j <= Math.Min(Field.SIZE_Y - 1, y + dist); j++)
         {
           double adist = Math.Pow(x - i, 2) + Math.Pow(y - j, 2);
           if (adist <= dist2)
