@@ -90,7 +90,7 @@ namespace Infections
 
       using (Graphics g = this.panel1.CreateGraphics())
       {
-        g.Clear(Color.White);
+        // g.Clear(Color.White);
 
         for (int i = 0; i < Field.SIZE_X; i++)
         {
@@ -102,7 +102,9 @@ namespace Infections
             if (v.IsDead)
             {
               using (Pen p = new Pen(new SolidBrush(Color.Black)))
+              using (Brush b = new SolidBrush(Color.White))
               {
+                g.FillRectangle (b, i * FIELD_ITEM_SIZE, j * FIELD_ITEM_SIZE, FIELD_ITEM_SIZE, FIELD_ITEM_SIZE);
                 g.DrawLine(p, i * FIELD_ITEM_SIZE, j * FIELD_ITEM_SIZE, i * FIELD_ITEM_SIZE + FIELD_ITEM_SIZE - 1, j * FIELD_ITEM_SIZE + FIELD_ITEM_SIZE -1);
                 g.DrawLine(p, i * FIELD_ITEM_SIZE, j * FIELD_ITEM_SIZE + FIELD_ITEM_SIZE - 1, i * FIELD_ITEM_SIZE + FIELD_ITEM_SIZE -1, j * FIELD_ITEM_SIZE);
               }

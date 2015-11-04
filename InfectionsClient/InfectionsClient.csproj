@@ -79,7 +79,7 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\InfectionsLib\InfectionsLib.csproj">
-      <Project>{ab0c6d81-84b5-4eb0-a544-49e74cf72850}</Project>
+      <Project>{AB0C6D81-84B5-4EB0-A544-49E74CF72850}</Project>
       <Name>InfectionsLib</Name>
     </ProjectReference>
   </ItemGroup>
