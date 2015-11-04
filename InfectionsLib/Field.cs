@@ -20,6 +20,12 @@ namespace InfectionsLib
     private AutoResetEvent stopEvent = new AutoResetEvent(false);
     private int step = 0;
 
+    public enum State {
+      Started,
+      Stopped
+    }
+    private State state = State.Stopped;
+
     public delegate void FieldProgressEventhandler();
     public event FieldProgressEventhandler FieldProgressEvent;
 
@@ -37,6 +43,10 @@ namespace InfectionsLib
       get { return this.step; }
     }
 
+    public State FieldState {
+      get { return this.state; }
+    }
+
     public void Generate()
     {
       Random r = new Random();
@@ -52,6 +62,12 @@ namespace InfectionsLib
 
     public void Start()
     {
+      if (this.state != State.Stopped) {
+        return;
+      }
+
+      this.state = State.Started;
+
       Thread t = new Thread(() =>
       {
         Logger.Instance.Add("global", "", "----Start----");
@@ -144,6 +160,8 @@ namespace InfectionsLib
           }
           this.step++;
         }
+
+        this.state = State.Stopped;
 
         if (this.FieldProgressEvent != null)
         {

@@ -21,6 +21,8 @@ namespace Infections
     public Form1()
     {
       InitializeComponent();
+      this.button2.Enabled = false;
+
       Random rand = new Random();
 
       this.field = new Field();
@@ -71,12 +73,28 @@ namespace Infections
     private void field_FieldProgressEvent()
     {
       this.drawField();
+      this.updateView();
     }
 
     private void button1_Click(object sender, EventArgs e)
     {
       this.drawField();
       this.field.Start();
+      this.updateView();
+    }
+
+    private void updateView()
+    {
+      switch (this.field.FieldState) {
+      case Field.State.Started:
+        this.button1.Enabled = false;
+        this.button2.Enabled = true;
+        break;
+      case Field.State.Stopped:
+        this.button1.Enabled = true;
+        this.button2.Enabled = false;
+        break;
+      }
     }
 
     private void drawField()
