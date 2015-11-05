@@ -29,15 +29,15 @@ namespace Infections
 
     private void field_FieldProgressEvent()
     {
-      this.drawField();
-      this.updateView();
+      this.invokeDrawField();
+      this.invokeUpdateView();
     }
 
     private void button1_Click(object sender, EventArgs e)
     {
-      this.drawField();
+      this.invokeDrawField();
       this.field.Start();
-      this.updateView();
+      this.invokeUpdateView();
     }
 
     private void initInfections()
@@ -106,6 +106,16 @@ namespace Infections
       }
     }
 
+    private void invokeDrawField()
+    {
+      this.BeginInvoke((MethodInvoker)this.drawField);
+    }
+
+    private void invokeUpdateView()
+    {
+      this.BeginInvoke((MethodInvoker)this.updateView);
+    }
+
     private void drawField()
     {
       int infectionOffset = 3;
@@ -114,6 +124,8 @@ namespace Infections
       {
         return;
       }
+
+      this.label1.Text = String.Format("Step: {0}", this.field.Step);
 
       using (Graphics g = this.panel1.CreateGraphics())
       {
@@ -173,7 +185,7 @@ namespace Infections
 
     private void panel1_Paint(object sender, PaintEventArgs e)
     {
-      this.drawField();
+      this.invokeDrawField();
     }
 
     private void button4_Click(object sender, EventArgs e)
@@ -186,7 +198,7 @@ namespace Infections
     {
       this.field.Generate();
       this.initInfections();
-      this.drawField();
+      this.invokeDrawField();
     }
   }
 }
