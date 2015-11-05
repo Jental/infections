@@ -26,6 +26,12 @@ namespace InfectionsLib
       return list;
     }
 
+    public static IEnumerable<T> ToEnumerable<T>(this Array target)
+    {
+      foreach (var item in target)
+        yield return (T)item;
+    }
+
     public static IEnumerable<T> ShuffleNeighbours<T>(this IEnumerable<T> olist, Func<T, int> getHealth, double strengthPref)
     {
       if (olist.Count() == 0) {

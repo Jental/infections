@@ -23,9 +23,27 @@ namespace Infections
       InitializeComponent();
       this.button2.Enabled = false;
 
+      this.field = new Field();
+      this.initInfections();
+    }
+
+    private void field_FieldProgressEvent()
+    {
+      this.drawField();
+      this.updateView();
+    }
+
+    private void button1_Click(object sender, EventArgs e)
+    {
+      this.drawField();
+      this.field.Start();
+      this.updateView();
+    }
+
+    private void initInfections()
+    {
       Random rand = new Random();
 
-      this.field = new Field();
       Infection inf1 = new Infection()
       {
         Size = 5,
@@ -58,29 +76,16 @@ namespace Infections
 
       Infection inf3 = new Infection()
       {
-          Size = 1,
-          StoreSize = 2,
-          Agression = 5,
-          SpreadSpeed = 5,
-          SpreadDistance = 1,
-          SpeadArea = 1
+        Size = 1,
+        StoreSize = 2,
+        Agression = 5,
+        SpreadSpeed = 5,
+        SpreadDistance = 1,
+        SpeadArea = 1
       };
       this.infections.Add(inf3, Color.DarkOrange);
       InfectionSpeciman s3 = new InfectionSpeciman(inf3);
       field.Data[rand.Next(0, Field.SIZE_X), rand.Next(0, Field.SIZE_Y)].Infect(s3);
-    }
-
-    private void field_FieldProgressEvent()
-    {
-      this.drawField();
-      this.updateView();
-    }
-
-    private void button1_Click(object sender, EventArgs e)
-    {
-      this.drawField();
-      this.field.Start();
-      this.updateView();
     }
 
     private void updateView()
@@ -89,10 +94,14 @@ namespace Infections
       case Field.State.Started:
         this.button1.Enabled = false;
         this.button2.Enabled = true;
+        this.button4.Enabled = false;
+        this.button5.Enabled = false;
         break;
       case Field.State.Stopped:
         this.button1.Enabled = true;
         this.button2.Enabled = false;
+        this.button4.Enabled = true;
+        this.button5.Enabled = true;
         break;
       }
     }
@@ -155,6 +164,29 @@ namespace Infections
     private void Form1_FormClosing(object sender, FormClosingEventArgs e)
     {
       this.field.Stop();
+    }
+
+    private void button3_Click(object sender, EventArgs e)
+    {
+      this.field.Save("field.data");
+    }
+
+    private void panel1_Paint(object sender, PaintEventArgs e)
+    {
+      this.drawField();
+    }
+
+    private void button4_Click(object sender, EventArgs e)
+    {
+      this.field.Load("field.data");
+      this.initInfections();
+    }
+
+    private void button5_Click(object sender, EventArgs e)
+    {
+      this.field.Generate();
+      this.initInfections();
+      this.drawField();
     }
   }
 }

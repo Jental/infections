@@ -1,12 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.Serialization;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace InfectionsLib
 {
-  public class Victim
+  [Serializable()]
+  public class Victim : ISerializable
   {
     private int maxHealth;
     private int health;
@@ -16,6 +18,12 @@ namespace InfectionsLib
     public Victim(int maxHealth)
     {
       this.maxHealth = maxHealth;
+      this.health = maxHealth;
+    }
+
+    public Victim(SerializationInfo info, StreamingContext context)
+    {
+      this.maxHealth = (int)info.GetValue("max_health", typeof(int));
       this.health = maxHealth;
     }
 
@@ -69,6 +77,11 @@ namespace InfectionsLib
     public bool IsDead
     {
       get { return this.health <= 0; }
+    }
+
+    public void GetObjectData(SerializationInfo info, StreamingContext context)
+    {
+      info.AddValue("max_health", this.maxHealth);
     }
   }
 }

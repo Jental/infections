@@ -1,13 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Runtime.Serialization;
+using System.Runtime.Serialization.Formatters.Binary;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
 namespace InfectionsLib
 {
-  public class Field
+  [Serializable()]
+  public class Field: ISerializable
   {
     public const int SIZE_X = 50;
     public const int SIZE_Y = 50;
@@ -34,6 +38,11 @@ namespace InfectionsLib
       this.Generate();
     }
 
+    public Field(SerializationInfo info, StreamingContext context)
+    {
+      this.data = (Victim[,])info.GetValue("field", typeof(Victim[,]));
+    }
+
     public Victim[,] Data
     {
       get { return this.data; }
@@ -49,13 +58,74 @@ namespace InfectionsLib
 
     public void Generate()
     {
-      Random r = new Random();
-      for (int i = 0; i < SIZE_X; i++)
+      if (this.state == State.Stopped)
       {
-        for (int j = 0; j < SIZE_Y; j++)
+        Random r = new Random();
+        for (int i = 0; i < SIZE_X; i++)
         {
-          int val = r.Next(Field.MIN_HEALTH, Field.MAX_HEALTH);
-          data[i, j] = new Victim(val);
+          for (int j = 0; j < SIZE_Y; j++)
+          {
+            int val = r.Next(Field.MIN_HEALTH, Field.MAX_HEALTH);
+            data[i, j] = new Victim(val);
+          }
+        }
+
+        if (this.FieldProgressEvent != null)
+        {
+          this.FieldProgressEvent();
+        }
+      }
+    }
+
+    public void GetObjectData(SerializationInfo info, StreamingContext context)
+    {
+      //BinaryFormatter bf = new BinaryFormatter();
+
+      //byte[] vData =
+      //  this.data
+      //  .ToEnumerable<Victim[]>()
+      //  .SelectMany((r) => r.ToEnumerable<Victim>())
+      //  .SelectMany((v) => {
+      //    MemoryStream s = new MemoryStream();
+      //    bf.Serialize(s, v);
+      //    return s.ToArray();
+      //  })
+      //  .ToArray();
+
+      info.AddValue("field", this.data, typeof(Victim[,]));
+    }
+
+    public void Save(string path)
+    {
+      string fullPath = Path.GetFullPath(path);
+      string dirName = Path.GetDirectoryName(fullPath);
+      if (!Directory.Exists(dirName))
+      {
+        Directory.CreateDirectory(dirName);
+      }
+
+      using (FileStream f = File.OpenWrite(path))
+      {
+        BinaryFormatter bf = new BinaryFormatter();
+        bf.Serialize(f, this);
+      }
+    }
+
+    public void Load(string path)
+    {
+      if (File.Exists(path) && this.state == State.Stopped)
+      {
+        using (FileStream f = File.OpenRead(path))
+        {
+          BinaryFormatter bf = new BinaryFormatter();
+          Field loadedField = (Field)bf.Deserialize(f);
+          this.data = loadedField.data;
+          this.step = 0;
+        }
+
+        if (this.FieldProgressEvent != null)
+        {
+          this.FieldProgressEvent();
         }
       }
     }
