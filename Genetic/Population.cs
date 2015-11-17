@@ -30,7 +30,7 @@ namespace Genetic
     public Population(int size)
     {
       this.size = size;
-      this.Generate();
+      this.generate();
     }
 
     public Population(int size, string file)
@@ -44,6 +44,14 @@ namespace Genetic
         this.AddRange(data);
       }
 
+      this.generate();
+    }
+
+    public Population(int size, List<Infection> previous)
+    {
+      this.size = size;
+
+      // TODO: replace with crossover+mutation
       this.generate();
     }
 

@@ -23,8 +23,8 @@ namespace Genetic
     }
 
     const int POPULATION_SIZE = 100;
-    const int SIZE_X = 20;
-    const int SIZE_Y = 20;
+    const int SIZE_X = 100;
+    const int SIZE_Y = 100;
     const int MIN_HEALTH = 1;
     const int MAX_HEALTH = 100;
     static Point[] START = new Point[4]
@@ -35,8 +35,34 @@ namespace Genetic
       new Point(SIZE_X / 4, SIZE_Y * 3 / 4)
     };
     const int TOP_SIZE = 10;
+    const int TIME_LIMIT = 5; // in minutes
 
-    static void start(Field field, Population infections)
+    static Infection start(Field field, Population infections)
+    {
+      List<Infection> previous = null;
+      while (true)
+      {
+        Dictionary<Infection, TimeSpan> res;
+        if (previous == null) {
+           res = startRound(field, infections);
+        }
+        else {
+          Population newInfections = new Population(infections.Count, previous);
+          res = startRound(field, newInfections);
+        }
+
+        TimeSpan maxTime = res.Max((kvp) => kvp.Value);
+        if (maxTime >= TimeSpan.FromMinutes(TIME_LIMIT))
+        {
+          Infection found = res.Where((kvp) => kvp.Value == maxTime).First().Key;
+          return found;
+        }
+
+        previous = res.Select((kvp) => kvp.Key).ToList();
+      }
+    }
+
+    static Dictionary<Infection, TimeSpan> startRound(Field field, Population infections)
     {
       Random rnd = new Random();
 
@@ -113,7 +139,7 @@ namespace Genetic
         Console.WriteLine("\t{0}", kvp.Value);
       }
 
-      Console.ReadLine();
+      return top;
     }
 
     static void Main(string[] args)
@@ -161,7 +187,10 @@ namespace Genetic
           ? new Population(POPULATION_SIZE)
           : new Population(POPULATION_SIZE, infectionsFile);
 
-        start(field, infections);
+        Infection res = start(field, infections);
+
+        Console.WriteLine("Winner: {0}", res.ToString());
+        Console.ReadLine();
       }
     }
   }
