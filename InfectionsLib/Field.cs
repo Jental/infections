@@ -13,14 +13,12 @@ namespace InfectionsLib
   [Serializable()]
   public class Field: ISerializable
   {
-    public const int SIZE_X = 50;
-    public const int SIZE_Y = 50;
-    public const int MIN_HEALTH = 1;
-    public const int MAX_HEALTH = 100;
+    private int sizeX = 50;
+    private int sizeY = 50;
 
     private const int STEP_TIME = 1000;
 
-    private Victim[,] data = new Victim[Field.SIZE_X, Field.SIZE_Y];
+    private Victim[,] data;
     private AutoResetEvent stopEvent = new AutoResetEvent(false);
     private int step = 0;
 
@@ -33,9 +31,19 @@ namespace InfectionsLib
     public delegate void FieldProgressEventhandler();
     public event FieldProgressEventhandler FieldProgressEvent;
 
-    public Field()
+    public Field(int sizeX, int sizeY, int minHealth, int maxHealth)
     {
-      this.Generate();
+      this.sizeX = sizeX;
+      this.sizeY = sizeY;
+
+      this.data = new Victim[this.sizeX, this.sizeY];
+
+      this.Generate(minHealth, maxHealth);
+    }
+
+    public Field(string path)
+    {
+      this.Load(path);
     }
 
     public Field(SerializationInfo info, StreamingContext context)
@@ -56,16 +64,16 @@ namespace InfectionsLib
       get { return this.state; }
     }
 
-    public void Generate()
+    public void Generate(int minHealth, int maxHealth)
     {
       if (this.state == State.Stopped)
       {
         Random r = new Random();
-        for (int i = 0; i < SIZE_X; i++)
+        for (int i = 0; i < sizeX; i++)
         {
-          for (int j = 0; j < SIZE_Y; j++)
+          for (int j = 0; j < sizeY; j++)
           {
-            int val = r.Next(Field.MIN_HEALTH, Field.MAX_HEALTH);
+            int val = r.Next(minHealth, maxHealth);
             data[i, j] = new Victim(val);
           }
         }
@@ -75,6 +83,21 @@ namespace InfectionsLib
           this.FieldProgressEvent();
         }
       }
+    }
+
+    public void Reset()
+    {
+      if (this.state == State.Stopped)
+      {
+        for (int i = 0; i < sizeX; i++)
+        {
+          for (int j = 0; j < sizeY; j++)
+          {
+            data[i, j].Reset();
+          }
+        }
+      }
+
     }
 
     public void GetObjectData(SerializationInfo info, StreamingContext context)
@@ -121,6 +144,8 @@ namespace InfectionsLib
           Field loadedField = (Field)bf.Deserialize(f);
           this.data = loadedField.data;
           this.step = 0;
+          this.sizeX = this.data.GetLength(0);
+          this.sizeY = this.data.GetLength(1);
         }
 
         if (this.FieldProgressEvent != null)
@@ -148,9 +173,9 @@ namespace InfectionsLib
 
           activityPresent = false;
 
-          for (int i = 0; i < SIZE_X; i++)
+          for (int i = 0; i < sizeX; i++)
           {
-            for (int j = 0; j < SIZE_Y; j++)
+            for (int j = 0; j < sizeY; j++)
             {
               Victim v = this.data[i, j];
               if (v.IsInfected && !v.IsDead)
@@ -231,6 +256,7 @@ namespace InfectionsLib
           this.step++;
         }
 
+        Logger.Instance.Add("global", "", "-----End-----");
         this.state = State.Stopped;
 
         if (this.FieldProgressEvent != null)
@@ -250,8 +276,8 @@ namespace InfectionsLib
     private IEnumerable<KeyValuePair<Victim, double>> getNeighbours(int x, int y, int dist)
     {
       double dist2 = Math.Pow(dist, 2);
-      for (int i = Math.Max(0, x - dist); i <= Math.Min(Field.SIZE_X - 1, x + dist); i++) {
-        for (int j = Math.Max(0, y - dist); j <= Math.Min(Field.SIZE_Y - 1, y + dist); j++)
+      for (int i = Math.Max(0, x - dist); i <= Math.Min(this.sizeX - 1, x + dist); i++) {
+        for (int j = Math.Max(0, y - dist); j <= Math.Min(this.sizeY - 1, y + dist); j++)
         {
           double adist = Math.Pow(x - i, 2) + Math.Pow(y - j, 2);
           if (adist <= dist2)

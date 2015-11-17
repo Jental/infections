@@ -5,6 +5,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "InfectionsClient", "Infecti
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "InfectionsLib", "InfectionsLib\InfectionsLib.csproj", "{AB0C6D81-84B5-4EB0-A544-49E74CF72850}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Genetic", "Genetic\Genetic.csproj", "{7075CC20-0978-4420-95DB-00473A4AE5F1}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -19,6 +21,13 @@ Global
 		{AB0C6D81-84B5-4EB0-A544-49E74CF72850}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{AB0C6D81-84B5-4EB0-A544-49E74CF72850}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{AB0C6D81-84B5-4EB0-A544-49E74CF72850}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7075CC20-0978-4420-95DB-00473A4AE5F1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7075CC20-0978-4420-95DB-00473A4AE5F1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7075CC20-0978-4420-95DB-00473A4AE5F1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7075CC20-0978-4420-95DB-00473A4AE5F1}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(MonoDevelopProperties) = preSolution
 		Policies = $0
@@ -33,8 +42,5 @@ Global
 		$2.inheritsSet = VisualStudio
 		$2.inheritsScope = text/plain
 		$2.scope = text/plain
-	EndGlobalSection
-	GlobalSection(SolutionProperties) = preSolution
-		HideSolutionNode = FALSE
 	EndGlobalSection
 EndGlobal

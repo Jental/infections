@@ -14,6 +14,10 @@ namespace Infections
   public partial class Form1 : Form
   {
     private const int FIELD_ITEM_SIZE = 10;
+    public const int SIZE_X = 50;
+    public const int SIZE_Y = 50;
+    public const int MIN_HEALTH = 1;
+    public const int MAX_HEALTH = 100;
 
     Field field;
     Dictionary<Infection, Color> infections = new Dictionary<Infection, Color>();
@@ -23,7 +27,7 @@ namespace Infections
       InitializeComponent();
       this.button2.Enabled = false;
 
-      this.field = new Field();
+      this.field = new Field(SIZE_X, SIZE_Y, MIN_HEALTH, MAX_HEALTH);
       this.initInfections();
     }
 
@@ -55,7 +59,7 @@ namespace Infections
       };
       InfectionSpeciman s1 = new InfectionSpeciman(inf1);
       this.infections.Add(inf1, Color.Red);
-      Victim v = field.Data[rand.Next(0, Field.SIZE_X), rand.Next(0, Field.SIZE_Y)];
+      Victim v = field.Data[rand.Next(0, SIZE_X), rand.Next(0, SIZE_Y)];
       //v.Health = Field.MAX_HEALTH;
       v.Infect(s1);
 
@@ -70,7 +74,7 @@ namespace Infections
       };
       this.infections.Add(inf2, Color.Green);
       InfectionSpeciman s2 = new InfectionSpeciman(inf2);
-      field.Data[rand.Next(0, Field.SIZE_X), rand.Next(0, Field.SIZE_Y)].Infect(s2);
+      field.Data[rand.Next(0, SIZE_X), rand.Next(0, SIZE_Y)].Infect(s2);
 
       field.FieldProgressEvent += field_FieldProgressEvent;
 
@@ -85,7 +89,7 @@ namespace Infections
       };
       this.infections.Add(inf3, Color.DarkOrange);
       InfectionSpeciman s3 = new InfectionSpeciman(inf3);
-      field.Data[rand.Next(0, Field.SIZE_X), rand.Next(0, Field.SIZE_Y)].Infect(s3);
+      field.Data[rand.Next(0, SIZE_X), rand.Next(0, SIZE_Y)].Infect(s3);
     }
 
     private void updateView()
@@ -131,12 +135,12 @@ namespace Infections
       {
         // g.Clear(Color.White);
 
-        for (int i = 0; i < Field.SIZE_X; i++)
+        for (int i = 0; i < SIZE_X; i++)
         {
-          for (int j = 0; j < Field.SIZE_Y; j++)
+          for (int j = 0; j < SIZE_Y; j++)
           {
             Victim v = this.field.Data[i, j];
-            int colorComponent = 255 * v.Health / (Field.MAX_HEALTH + 1);
+            int colorComponent = 255 * v.Health / (MAX_HEALTH + 1);
 
             if (v.IsDead)
             {
@@ -196,7 +200,7 @@ namespace Infections
 
     private void button5_Click(object sender, EventArgs e)
     {
-      this.field.Generate();
+      this.field.Generate(MIN_HEALTH, MAX_HEALTH);
       this.initInfections();
       this.invokeDrawField();
     }

@@ -37,11 +37,15 @@ namespace InfectionsLib
       get { return this.health; }
       set
       {
-        if (value < 0)
+        if (value <= 0)
         {
           if (this.health > 0)
           {
             Logger.Instance.Add("victim", this.GetHashCode().ToString(), "Dead");
+            foreach (InfectionSpeciman inf in this.infections)
+            {
+              inf.Balance = -1; // Killing all infections
+            }
           }
           this.health = 0;
         }
@@ -62,6 +66,13 @@ namespace InfectionsLib
     {
       Logger.Instance.Add("victim", this.GetHashCode().ToString(), String.Format("Cured from {0}", inf.GetHashCode()));
       this.infections.Remove(inf);
+    }
+
+    public void Reset()
+    {
+      // Logger.Instance.Add("victim", this.GetHashCode().ToString(), "Resetted");
+      this.infections.Clear();
+      this.health = this.maxHealth;
     }
 
     public IEnumerable<InfectionSpeciman> Infections

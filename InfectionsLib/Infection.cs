@@ -13,6 +13,7 @@ namespace InfectionsLib
     private int agression = 1;
     private int spreadDistance = 1;
     private int speadArea = 1;
+    private Guid id = Guid.NewGuid();
 
     public int Size
     {
@@ -49,6 +50,28 @@ namespace InfectionsLib
     {
       get { return speadArea; }
       set { speadArea = value; }
+    }
+
+    public Guid Id
+    {
+      get
+      {
+        return this.id;
+      }
+    }
+
+    public override string ToString()
+    {
+      return String.Format(
+        "{{Id: {0}, Size: {1}, StoreSize: {2}, Aggression: {3}, SpreadSpeed: {4}, SpreadDistance: {5}, SpreadArea: {6}}}",
+        this.id,
+        this.Size,
+        this.StoreSize,
+        this.Agression,
+        this.SpreadSpeed,
+        this.SpreadDistance,
+        this.SpeadArea
+        );
     }
 
   }

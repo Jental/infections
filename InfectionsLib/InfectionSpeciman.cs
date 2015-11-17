@@ -8,9 +8,13 @@ namespace InfectionsLib
 {
   public class InfectionSpeciman
   {
+    public delegate void DeadEventHandler();
+    public event DeadEventHandler DeadEvent;
+
     private Infection type;
     private int balance = 0;
     private int spreadCounter = 0;
+    private Guid id = Guid.NewGuid();
 
     public InfectionSpeciman(Infection type)
     {
@@ -32,6 +36,10 @@ namespace InfectionsLib
           if (this.balance >= 0 && value < 0)
           {
             Logger.Instance.Add("infection", this.GetHashCode().ToString(), "Dead");
+            if (this.DeadEvent != null)
+            {
+              this.DeadEvent();
+            }
           }
           Logger.Instance.Add("infection", this.GetHashCode().ToString(), "New Balance: " + value);
           this.balance = value;
@@ -62,6 +70,11 @@ namespace InfectionsLib
     public bool IsSpreadTime
     {
       get { return this.spreadCounter == 0; }
+    }
+
+    public Guid Id
+    {
+      get { return this.id; }
     }
   }
 }
