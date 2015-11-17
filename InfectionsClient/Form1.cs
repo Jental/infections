@@ -52,10 +52,10 @@ namespace Infections
       {
         Size = 5,
         StoreSize = 2,
-        Agression = 12,
+        Aggression = 12,
         SpreadSpeed = 3,
         SpreadDistance = 1,
-        SpeadArea = 1
+        SpreadArea = 1
       };
       InfectionSpeciman s1 = new InfectionSpeciman(inf1);
       this.infections.Add(inf1, Color.Red);
@@ -67,10 +67,10 @@ namespace Infections
       {
         Size = 1,
         StoreSize = 4,
-        Agression = 9,
+        Aggression = 9,
         SpreadSpeed = 5,
         SpreadDistance = 2,
-        SpeadArea = 2
+        SpreadArea = 2
       };
       this.infections.Add(inf2, Color.Green);
       InfectionSpeciman s2 = new InfectionSpeciman(inf2);
@@ -82,10 +82,10 @@ namespace Infections
       {
         Size = 1,
         StoreSize = 2,
-        Agression = 5,
+        Aggression = 5,
         SpreadSpeed = 5,
         SpreadDistance = 1,
-        SpeadArea = 1
+        SpreadArea = 1
       };
       this.infections.Add(inf3, Color.DarkOrange);
       InfectionSpeciman s3 = new InfectionSpeciman(inf3);

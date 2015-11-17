@@ -1,6 +1,8 @@
 ﻿using InfectionsLib;
+using NDesk.Options;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading;
@@ -33,11 +35,10 @@ namespace Genetic
       new Point(250, 750)
     };
 
-    static void Main(string[] args)
+    static void start(Field field, Population infections)
     {
       Random rnd = new Random();
-      Field field = new Field(SIZE_X, SIZE_Y, MIN_HEALTH, MAX_HEALTH);
-      Population infections = new Population(POPULATION_SIZE);
+
       Dictionary<Infection, TimeSpan> top = new Dictionary<Infection,TimeSpan>();
       AutoResetEvent infectionLifeEnded = new AutoResetEvent(false);
       Field.State oldState = field.FieldState;
@@ -100,6 +101,55 @@ namespace Genetic
       }
 
       Console.ReadKey();
+    }
+
+    static void Main(string[] args)
+    {
+      Field field = null;
+      string infectionsFile = null;
+      bool showHelp = false;
+
+      OptionSet p = new OptionSet()
+           .Add("h|?|help", (v) =>
+            {
+              showHelp = v != null;
+            })
+           .Add("f|field=", (v) =>
+            {
+              if (v != null)
+              {
+                field = new Field(v);
+              }
+            })
+           .Add("i|infections=", (v) => {
+             if (v != null)
+             {
+               infectionsFile = v;
+             }
+           })
+           .Add("nolog", (v) => {
+             Logger.Instance.Disabled = true;
+           });
+      List<string> extra = p.Parse(args);
+
+      if (showHelp)
+      {
+        Console.WriteLine(p.ToString());
+      }
+      else
+      {
+        if (field == null)
+        {
+          field = new Field(SIZE_X, SIZE_Y, MIN_HEALTH, MAX_HEALTH);
+        }
+
+        Population infections =
+          (infectionsFile == null)
+          ? new Population(POPULATION_SIZE)
+          : new Population(POPULATION_SIZE, infectionsFile);
+
+        start(field, infections);
+      }
     }
   }
 }

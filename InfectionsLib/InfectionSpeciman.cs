@@ -76,5 +76,13 @@ namespace InfectionsLib
     {
       get { return this.id; }
     }
+
+    public InfectionSpeciman Clone()
+    {
+      InfectionSpeciman copy = new InfectionSpeciman(this.type);
+      copy.DeadEvent += this.DeadEvent;
+
+      return copy;
+    }
   }
 }

@@ -102,19 +102,6 @@ namespace InfectionsLib
 
     public void GetObjectData(SerializationInfo info, StreamingContext context)
     {
-      //BinaryFormatter bf = new BinaryFormatter();
-
-      //byte[] vData =
-      //  this.data
-      //  .ToEnumerable<Victim[]>()
-      //  .SelectMany((r) => r.ToEnumerable<Victim>())
-      //  .SelectMany((v) => {
-      //    MemoryStream s = new MemoryStream();
-      //    bf.Serialize(s, v);
-      //    return s.ToArray();
-      //  })
-      //  .ToArray();
-
       info.AddValue("field", this.data, typeof(Victim[,]));
     }
 
@@ -190,7 +177,7 @@ namespace InfectionsLib
 
                   Logger.Instance.Add("infection", inf.GetHashCode().ToString(), String.Format("On victim cell: {0}x{1}", i, j));
 
-                  int eaten = Math.Min(v.Health, inf.Type.Agression);
+                  int eaten = Math.Min(v.Health, inf.Type.Aggression);
                   v.Health -= eaten;
                   inf.Balance += eaten;
                   Logger.Instance.Add("infection", inf.GetHashCode().ToString(), "Eaten: " + eaten);
@@ -208,7 +195,7 @@ namespace InfectionsLib
                           .Where((v1) => !v1.Key.IsInfected && !v1.Key.IsDead && v1.Key.Health <= inf.Type.Size * Consumption.POWER)
                           .ShuffleNeighbours((kvp) => kvp.Key.Health, 0.75)
                           .ToList();
-                    for (int k = 0; k < inf.Type.SpeadArea; k++)
+                    for (int k = 0; k < inf.Type.SpreadArea; k++)
                     {
                       if (k < nb.Count)
                       {
@@ -216,7 +203,8 @@ namespace InfectionsLib
                         Logger.Instance.Add("infection", inf.GetHashCode().ToString(), "Spent on spread: " + Consumption.ofSpread(inf.Type, nb[k].Value));
                         if (!inf.IsDead)
                         {
-                          nb[k].Key.Infect(new InfectionSpeciman(inf.Type));
+                          InfectionSpeciman newSpec = inf.Clone();
+                          nb[k].Key.Infect(newSpec);
                           Logger.Instance.Add("infection", inf.GetHashCode().ToString(), String.Format("Spread to victim with health: {0}", nb[k].Key.Health));
                         }
                         else

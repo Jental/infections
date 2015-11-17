@@ -3,55 +3,70 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Runtime.Serialization;
 
 namespace InfectionsLib
 {
+  [DataContract]
   public class Infection
   {
     private int size = 1;
     private int storeSize = 1;
-    private int agression = 1;
+    private int aggression = 1;
     private int spreadDistance = 1;
-    private int speadArea = 1;
+    private int spreadArea = 1;
     private Guid id = Guid.NewGuid();
 
+    [OnDeserializing]
+    private void onDeserializing(StreamingContext c)
+    {
+      this.id = Guid.NewGuid();
+    }
+
+    [DataMember]
     public int Size
     {
       get { return size; }
       set { size = value; }
     }
 
+    [DataMember]
     public int StoreSize
     {
       get { return storeSize; }
       set { storeSize = value; }
     }
 
-    public int Agression
+    [DataMember]
+    public int Aggression
     {
-      get { return agression; }
-      set { agression = value; }
+      get { return aggression; }
+      set { aggression = value; }
     }
     private int spreadSpeed = 1;
 
+    [DataMember]
     public int SpreadSpeed
     {
       get { return spreadSpeed; }
       set { spreadSpeed = value; }
     }
 
+    [DataMember]
     public int SpreadDistance
     {
       get { return spreadDistance; }
       set { spreadDistance = value; }
     }
 
-    public int SpeadArea
+    [DataMember]
+    public int SpreadArea
     {
-      get { return speadArea; }
-      set { speadArea = value; }
+      get { return spreadArea; }
+      set { spreadArea = value; }
     }
 
+    [IgnoreDataMember]
     public Guid Id
     {
       get
@@ -67,10 +82,10 @@ namespace InfectionsLib
         this.id,
         this.Size,
         this.StoreSize,
-        this.Agression,
+        this.Aggression,
         this.SpreadSpeed,
         this.SpreadDistance,
-        this.SpeadArea
+        this.SpreadArea
         );
     }
 

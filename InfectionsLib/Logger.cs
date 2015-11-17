@@ -12,6 +12,8 @@ namespace InfectionsLib
     private const string LOG_PATH = "infections.log";
     private const string LOG_FORMAT = "{0} : {1} : {2} : {3}";
 
+    private bool disabled = false;
+
     private static Logger instance = new Logger();
 
     private Logger()
@@ -25,10 +27,18 @@ namespace InfectionsLib
 
     public void Add(string type, string id, string str)
     {
+      if (this.disabled)
+        return;
+
       using (StreamWriter f = new StreamWriter(Logger.LOG_PATH, true))
       {
         f.WriteLine(String.Format(Logger.LOG_FORMAT, DateTime.Now, type, id, str));
       }
+    }
+
+    public bool Disabled
+    {
+      set { disabled = value; }
     }
   }
 }

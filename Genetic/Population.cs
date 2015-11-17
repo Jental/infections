@@ -4,6 +4,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Runtime.Serialization.Json;
+using System.IO;
 
 namespace Genetic
 {
@@ -31,17 +33,35 @@ namespace Genetic
       this.Generate();
     }
 
+    public Population(int size, string file)
+    {
+      this.size = size;
+
+      using (FileStream f = File.OpenRead(file))
+      {
+        DataContractJsonSerializer serializer = new DataContractJsonSerializer(typeof(List<Infection>));
+        List<Infection> data = (List<Infection>)serializer.ReadObject(f);
+        this.AddRange(data);
+      }
+
+      this.generate();
+    }
+
     public void Generate()
     {
       this.Clear();
+      this.generate();
+    }
 
-      for (int i = 0; i < size; i++)
+    private void generate()
+    {
+      for (int i = this.Count; i < this.size; i++)
       {
         Infection inf = new Infection()
         {
-          Agression = rnd.Next(MIN_AGGRESSION, MAX_AGGRESSION),
+          Aggression = rnd.Next(MIN_AGGRESSION, MAX_AGGRESSION),
           Size = rnd.Next(MIN_SIZE, MAX_SIZE),
-          SpeadArea = rnd.Next(MIN_SPREADAREA, MAX_SPREADAREA),
+          SpreadArea = rnd.Next(MIN_SPREADAREA, MAX_SPREADAREA),
           SpreadDistance = rnd.Next(MIN_SPREADDISTANCE, MAX_SPREADDISTANCE),
           SpreadSpeed = rnd.Next(MIN_SPREADSPEED, MAX_SPREADSPEED),
           StoreSize = rnd.Next(MIN_STORESIZE, MAX_STORESIZE)
