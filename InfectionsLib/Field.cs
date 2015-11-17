@@ -16,7 +16,7 @@ namespace InfectionsLib
     private int sizeX = 50;
     private int sizeY = 50;
 
-    private const int STEP_TIME = 1000;
+    private const int STEP_TIME = 10;
 
     private Victim[,] data;
     private AutoResetEvent stopEvent = new AutoResetEvent(false);

@@ -23,17 +23,18 @@ namespace Genetic
     }
 
     const int POPULATION_SIZE = 100;
-    const int SIZE_X = 1000;
-    const int SIZE_Y = 1000;
+    const int SIZE_X = 20;
+    const int SIZE_Y = 20;
     const int MIN_HEALTH = 1;
     const int MAX_HEALTH = 100;
     static Point[] START = new Point[4]
     {
-      new Point(250, 250),
-      new Point(750, 250),
-      new Point(750, 750),
-      new Point(250, 750)
+      new Point(SIZE_X / 4, SIZE_Y / 4),
+      new Point(SIZE_X * 3 / 4, SIZE_Y / 4),
+      new Point(SIZE_X * 3 / 4, SIZE_Y * 3 / 4),
+      new Point(SIZE_X / 4, SIZE_Y * 3 / 4)
     };
+    const int TOP_SIZE = 10;
 
     static void start(Field field, Population infections)
     {
@@ -82,13 +83,25 @@ namespace Genetic
         DateTime endTime2 = DateTime.Now;
         TimeSpan span = endTime2 - startTime;
         Console.WriteLine("{0} : {1}: End : Lifespan: {2}", endTime2.ToString(), inf.Id.ToString(), span);
-        IEnumerable<KeyValuePair<Infection, TimeSpan>> foundInTop = top.Where(((kvp) => kvp.Value > span));
-        int count = foundInTop.Count();
-        if (count > 0)
+
+        if (top.Count >= TOP_SIZE)
         {
-          int idx = rnd.Next(0, count - 1);
-          KeyValuePair<Infection, TimeSpan> found = foundInTop.ElementAt(idx);
-          top.Remove(found.Key);
+          // Replacing last top entry
+
+          IEnumerable<KeyValuePair<Infection, TimeSpan>> foundInTop = top.Where(((kvp) => kvp.Value < span));
+          int count = foundInTop.Count();
+          if (count > 0)
+          {
+            int idx = rnd.Next(0, count - 1);
+            KeyValuePair<Infection, TimeSpan> found = foundInTop.ElementAt(idx);
+            top.Remove(found.Key);
+            top[inf] = span;
+          }
+        }
+        else
+        {
+          // Top is not filled yet - just adding
+
           top[inf] = span;
         }
       }
@@ -100,7 +113,7 @@ namespace Genetic
         Console.WriteLine("\t{0}", kvp.Value);
       }
 
-      Console.ReadKey();
+      Console.ReadLine();
     }
 
     static void Main(string[] args)
