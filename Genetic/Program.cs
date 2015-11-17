@@ -40,6 +40,8 @@ namespace Genetic
     static Infection start(Field field, Population infections)
     {
       List<Infection> previous = null;
+      TimeSpan previousMax = TimeSpan.MinValue;
+
       while (true)
       {
         Dictionary<Infection, TimeSpan> res;
@@ -58,7 +60,11 @@ namespace Genetic
           return found;
         }
 
-        previous = res.Select((kvp) => kvp.Key).ToList();
+        previous = 
+          res
+          // .Where((kvp) => kvp.Value >= previousMax)
+          .Select((kvp) => kvp.Key).ToList();
+        previousMax = maxTime;
       }
     }
 
@@ -88,17 +94,17 @@ namespace Genetic
         field.Reset();
         DateTime startTime = DateTime.Now;
 
-        Console.WriteLine("{0} : Next infection: {1}: \n{2}", startTime.ToString(), inf.Id.ToString(), inf.ToString());
+        // Console.WriteLine("{0} : Next infection: {1}: \n{2}", startTime.ToString(), inf.Id.ToString(), inf.ToString());
 
         foreach (Point s in START)
         {
           InfectionSpeciman infs = new InfectionSpeciman(inf);
-          infs.DeadEvent += () =>
-          {
-            DateTime endTime = DateTime.Now;
-            Console.WriteLine("{0} : {1} : Dead : Lifespan: {2}", endTime.ToString(), infs.Id.ToString(), endTime - startTime);
-          };
-          Console.WriteLine("{0} : {1} : Born", startTime.ToString(), infs.Id.ToString());
+          //infs.DeadEvent += () =>
+          //{
+          //  DateTime endTime = DateTime.Now;
+          //  Console.WriteLine("{0} : {1} : Dead : Lifespan: {2}", endTime.ToString(), infs.Id.ToString(), endTime - startTime);
+          //};
+          //Console.WriteLine("{0} : {1} : Born", startTime.ToString(), infs.Id.ToString());
           field.Data[s.X, s.Y].Infect(infs);
         }
 
@@ -108,7 +114,7 @@ namespace Genetic
 
         DateTime endTime2 = DateTime.Now;
         TimeSpan span = endTime2 - startTime;
-        Console.WriteLine("{0} : {1}: End : Lifespan: {2}", endTime2.ToString(), inf.Id.ToString(), span);
+        // Console.WriteLine("{0} : {1}: End : Lifespan: {2}", endTime2.ToString(), inf.Id.ToString(), span);
 
         if (top.Count >= TOP_SIZE)
         {
@@ -132,7 +138,8 @@ namespace Genetic
         }
       }
 
-      Console.WriteLine("Top:");
+      Console.Clear();
+      Console.WriteLine("Top {0}:", DateTime.Now.ToString());
       foreach (KeyValuePair<Infection, TimeSpan> kvp in top)
       {
         Console.WriteLine(kvp.Key);
