@@ -1,0 +1,4 @@
+[
+{ "Size": 3, "StoreSize": 2, "Aggression": 8, "SpreadSpeed": 6, "SpreadDistance": 11, "SpreadArea": 2 },
+{ "Size": 2, "StoreSize": 2, "Aggression": 12, "SpreadSpeed": 2, "SpreadDistance": 14, "SpreadArea": 1 }
+]
