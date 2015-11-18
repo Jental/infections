@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 namespace InfectionsLib
 {
   [Serializable()]
-  public class Victim : ISerializable
+  public class Victim : ISerializable, ICloneable
   {
     private int maxHealth;
     private int health;
@@ -93,6 +93,11 @@ namespace InfectionsLib
     public void GetObjectData(SerializationInfo info, StreamingContext context)
     {
       info.AddValue("max_health", this.maxHealth);
+    }
+
+    public object Clone()
+    {
+      return new Victim(this.maxHealth);
     }
   }
 }

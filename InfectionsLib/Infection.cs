@@ -75,6 +75,21 @@ namespace InfectionsLib
       }
     }
 
+    public override bool Equals(object obj)
+    {
+      if (obj.GetType() != typeof(Infection))
+        return false;
+
+      Infection casted = (Infection)obj;
+      return
+        this.aggression == casted.aggression
+        && this.size == casted.size
+        && this.storeSize == casted.storeSize
+        && this.spreadArea == casted.spreadArea
+        && this.spreadDistance == casted.spreadDistance
+        && this.spreadSpeed == casted.spreadSpeed;
+    }
+
     public override string ToString()
     {
       return String.Format(

@@ -41,16 +41,17 @@ namespace Genetic
     {
       List<Infection> previous = null;
       TimeSpan previousMax = TimeSpan.MinValue;
+      Dictionary<Infection, TimeSpan> top = new Dictionary<Infection, TimeSpan>();
 
       while (true)
       {
         Dictionary<Infection, TimeSpan> res;
         if (previous == null) {
-           res = startRound(field, infections);
+           res = startRound(field, infections, top);
         }
         else {
           Population newInfections = new Population(infections.Count, previous);
-          res = startRound(field, newInfections);
+          res = startRound(field, newInfections, top);
         }
 
         TimeSpan maxTime = res.Max((kvp) => kvp.Value);
@@ -68,30 +69,34 @@ namespace Genetic
       }
     }
 
-    static Dictionary<Infection, TimeSpan> startRound(Field field, Population infections)
+    static Dictionary<Infection, TimeSpan> startRound(Field fieldO, Population infections, Dictionary<Infection, TimeSpan> top)
     {
       Random rnd = new Random();
 
-      Dictionary<Infection, TimeSpan> top = new Dictionary<Infection,TimeSpan>();
-      AutoResetEvent infectionLifeEnded = new AutoResetEvent(false);
-      Field.State oldState = field.FieldState;
-      field.FieldProgressEvent += () =>
-      {
-        lock (field)
-        {
-          Field.State newState = field.FieldState;
-          if (newState == Field.State.Stopped && oldState != Field.State.Stopped)
-          {
-            infectionLifeEnded.Set();
-          }
-          oldState = field.FieldState;
-        }
-      };
-
+      AutoResetEvent allEnded = new AutoResetEvent(false);
+      int counter = 0;
 
       foreach (Infection inf in infections)
+        ThreadPool.QueueUserWorkItem((state) =>
       {
-        field.Reset();
+        Field field = (Field)fieldO.Clone();
+        AutoResetEvent infectionLifeEnded = new AutoResetEvent(false);
+
+        Field.State oldState = field.FieldState;
+        field.FieldProgressEvent += () =>
+        {
+          lock (field)
+          {
+            Field.State newState = field.FieldState;
+            if (newState == Field.State.Stopped && oldState != Field.State.Stopped)
+            {
+              infectionLifeEnded.Set();
+            }
+            oldState = field.FieldState;
+          }
+        };
+
+        // field.Reset();
         DateTime startTime = DateTime.Now;
 
         // Console.WriteLine("{0} : Next infection: {1}: \n{2}", startTime.ToString(), inf.Id.ToString(), inf.ToString());
@@ -116,27 +121,41 @@ namespace Genetic
         TimeSpan span = endTime2 - startTime;
         // Console.WriteLine("{0} : {1}: End : Lifespan: {2}", endTime2.ToString(), inf.Id.ToString(), span);
 
-        if (top.Count >= TOP_SIZE)
+        lock (top)
         {
-          // Replacing last top entry
-
-          IEnumerable<KeyValuePair<Infection, TimeSpan>> foundInTop = top.Where(((kvp) => kvp.Value < span));
-          int count = foundInTop.Count();
-          if (count > 0)
+          if (top.Count((kvp) => kvp.Key.Equals(inf)) == 0) // Top should contain unique elements
           {
-            int idx = rnd.Next(0, count - 1);
-            KeyValuePair<Infection, TimeSpan> found = foundInTop.ElementAt(idx);
-            top.Remove(found.Key);
-            top[inf] = span;
+            if (top.Count >= TOP_SIZE)
+            {
+              // Replacing worst top entry
+
+              IEnumerable<KeyValuePair<Infection, TimeSpan>> foundInTop = top.Where(((kvp) => kvp.Value < span));
+              int count = foundInTop.Count();
+              if (count > 0)
+              {
+                int idx = rnd.Next(0, count - 1);
+                KeyValuePair<Infection, TimeSpan> found = foundInTop.ElementAt(idx);
+                top.Remove(found.Key);
+                top[inf] = span;
+              }
+            }
+            else
+            {
+              // Top is not filled yet - just adding
+
+              top[inf] = span;
+            }
+          }
+
+          counter++;
+          if (counter == infections.Count)
+          {
+            allEnded.Set();
           }
         }
-        else
-        {
-          // Top is not filled yet - just adding
+      });
 
-          top[inf] = span;
-        }
-      }
+      allEnded.WaitOne();
 
       Console.Clear();
       Console.WriteLine("Top {0}:", DateTime.Now.ToString());

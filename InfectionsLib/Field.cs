@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 namespace InfectionsLib
 {
   [Serializable()]
-  public class Field: ISerializable
+  public class Field: ISerializable, ICloneable
   {
     private int sizeX = 50;
     private int sizeY = 50;
@@ -30,6 +30,10 @@ namespace InfectionsLib
 
     public delegate void FieldProgressEventhandler();
     public event FieldProgressEventhandler FieldProgressEvent;
+
+    private Field()
+    {
+    }
 
     public Field(int sizeX, int sizeY, int minHealth, int maxHealth)
     {
@@ -274,6 +278,27 @@ namespace InfectionsLib
           }
         }
       }
+    }
+
+    public object Clone()
+    {
+      Victim[,] newData = (Victim[,])this.data.Clone();
+      for (int i =0; i< this.sizeX; i++ )
+        for(int j=0; j<this.sizeY; j++)
+          newData[i, j] = (Victim)newData[i, j].Clone();
+
+      Field newField = new Field()
+      {
+        sizeX = this.sizeX,
+        sizeY = this.sizeY,
+        data = newData,
+        state = State.Stopped,
+        step = 0
+      };
+
+      // newField.FieldProgressEvent += this.FieldProgressEvent;
+
+      return newField;
     }
   }
 }

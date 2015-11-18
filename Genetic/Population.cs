@@ -52,7 +52,7 @@ namespace Genetic
     {
       this.size = size;
 
-      this.AddRange(previous);
+      // this.AddRange(previous);
       var newGeneration = this.crossover(previous); // crossover
       this.mutate(newGeneration);                   // mutate
       this.AddRange(newGeneration);
@@ -98,27 +98,27 @@ namespace Genetic
 
     private int getRandomDiff()
     {
-      int coeff = 4;
-      int maxDiff = 8;
-      int maxRnd = (int)Math.Pow(2, maxDiff + 1) - 1;
+      //int coeff = 4;
+      //int maxDiff = 8;
+      //int maxRnd = (int)Math.Pow(2, maxDiff + 1) - 1;
 
-      BitArray b = new BitArray(new byte[] { (byte)Math.Floor((double)(rnd.Next(0, maxRnd) / coeff)) });
-      IEnumerable<bool> casted = b.Cast<bool>();
-      for (int i = 0; i < casted.Count(); i++)
-      {
-        if (casted.ElementAt(i))
-        {
-          if (i != 0)
-          {
-            int sign = (rnd.Next(0, 1) == 0) ? 1 : -1;
-            return sign * i * coeff;
-          }
-          else
-            return i * coeff;
-        }
-      }
+      //BitArray b = new BitArray(new byte[] { (byte)Math.Floor((double)(rnd.Next(0, maxRnd) / coeff)) });
+      //IEnumerable<bool> casted = b.Cast<bool>();
+      //for (int i = 0; i < casted.Count(); i++)
+      //{
+      //  if (casted.ElementAt(i))
+      //  {
+      //    if (i != 0)
+      //    {
+      //      int sign = (rnd.Next(0, 1) == 0) ? 1 : -1;
+      //      return sign * i * coeff;
+      //    }
+      //    else
+      //      return i * coeff;
+      //  }
+      //}
 
-      return 0;
+      return this.rnd.Next(-8, 8);
     }
 
     private IEnumerable<Infection> crossover(IEnumerable<Infection> infections)
