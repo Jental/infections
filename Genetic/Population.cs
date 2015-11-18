@@ -19,7 +19,7 @@ namespace Genetic
     private const int MIN_SPREADAREA = 0;
     private const int MAX_SPREADAREA = 50;
     private const int MIN_SPREADDISTANCE = 0;
-    private const int MAX_SPREADDISTANCE = 20;
+    private const int MAX_SPREADDISTANCE = 2;
     private const int MIN_SPREADSPEED = 1;
     private const int MAX_SPREADSPEED = 50;
     private const int MIN_STORESIZE = 0;
@@ -87,12 +87,12 @@ namespace Genetic
     {
       foreach (Infection inf in infections)
       {
-        inf.Aggression += getRandomDiff();
-        inf.Size += getRandomDiff();
-        inf.SpreadArea += getRandomDiff();
-        inf.SpreadDistance += getRandomDiff();
-        inf.SpreadSpeed += getRandomDiff();
-        inf.StoreSize += getRandomDiff();
+        inf.Aggression = Math.Min(MAX_AGGRESSION, Math.Max(MIN_AGGRESSION, inf.Aggression + getRandomDiff()));
+        inf.Size =  Math.Min(MAX_SIZE, Math.Max(MIN_SIZE, inf.Size + getRandomDiff()));
+        inf.SpreadArea =  Math.Min(MAX_SPREADAREA, Math.Max(MIN_SPREADAREA, inf.SpreadArea + getRandomDiff()));
+        inf.SpreadDistance =  Math.Min(MAX_SPREADDISTANCE, Math.Max(MIN_SPREADDISTANCE, inf.SpreadDistance + getRandomDiff()));
+        inf.SpreadSpeed = Math.Min(MAX_SPREADSPEED, Math.Max(MIN_SPREADSPEED, inf.SpreadSpeed +  getRandomDiff()));
+        inf.StoreSize = Math.Min(MAX_STORESIZE, Math.Max(MIN_STORESIZE, inf.StoreSize +  getRandomDiff()));
       }
     }
 

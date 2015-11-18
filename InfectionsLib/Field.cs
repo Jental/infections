@@ -16,11 +16,13 @@ namespace InfectionsLib
     private int sizeX = 50;
     private int sizeY = 50;
 
+    private Guid id = Guid.NewGuid();
+
     private const int STEP_TIME = 0;
 
     private Victim[,] data;
     private AutoResetEvent stopEvent = new AutoResetEvent(false);
-    private int step = 0;
+    private ulong step = 0;
 
     public enum State {
       Started,
@@ -60,12 +62,57 @@ namespace InfectionsLib
       get { return this.data; }
     }
 
-    public int Step {
+    public ulong Step {
       get { return this.step; }
     }
 
     public State FieldState {
       get { return this.state; }
+    }
+
+    public ulong DeadCount
+    {
+      get
+      {
+        ulong result = 0;
+
+        for (int i = 0; i < this.sizeX; i++)
+          for (int j = 0; j < this.sizeY; j++)
+            if (this.data[i, j].IsDead)
+              result++;
+
+        return result;
+      }
+    }
+
+    public ulong InfectedCount
+    {
+      get
+      {
+        ulong result = 0;
+
+        for (int i = 0; i < this.sizeX; i++)
+          for (int j = 0; j < this.sizeY; j++)
+            if (this.data[i, j].IsInfected)
+              result++;
+
+        return result;
+      }
+    }
+
+    public ulong InfectedAndDeadCount
+    {
+      get
+      {
+        ulong result = 0;
+
+        for (int i = 0; i < this.sizeX; i++)
+          for (int j = 0; j < this.sizeY; j++)
+            if (this.data[i, j].IsInfected && this.data[i, j].IsDead)
+              result++;
+
+        return result;
+      }
     }
 
     public void Generate(int minHealth, int maxHealth)

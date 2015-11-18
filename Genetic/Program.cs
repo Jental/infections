@@ -35,17 +35,16 @@ namespace Genetic
       new Point(SIZE_X / 4, SIZE_Y * 3 / 4)
     };
     const int TOP_SIZE = 10;
-    const int TIME_LIMIT = 5; // in minutes
+    const ulong STEP_LIMIT = UInt64.MaxValue;
 
     static Infection start(Field field, Population infections)
     {
       List<Infection> previous = null;
-      TimeSpan previousMax = TimeSpan.MinValue;
-      Dictionary<Infection, TimeSpan> top = new Dictionary<Infection, TimeSpan>();
+      Dictionary<Infection, Result> top = new Dictionary<Infection, Result>();
 
       while (true)
       {
-        Dictionary<Infection, TimeSpan> res;
+        Dictionary<Infection, Result> res;
         if (previous == null) {
            res = startRound(field, infections, top);
         }
@@ -54,10 +53,10 @@ namespace Genetic
           res = startRound(field, newInfections, top);
         }
 
-        TimeSpan maxTime = res.Max((kvp) => kvp.Value);
-        if (maxTime >= TimeSpan.FromMinutes(TIME_LIMIT))
+        KeyValuePair<Infection, Result> maxResult = res.OrderByDescending((kvp) => kvp.Value).First();
+        if (maxResult.Value.steps >= STEP_LIMIT)
         {
-          Infection found = res.Where((kvp) => kvp.Value == maxTime).First().Key;
+          Infection found = maxResult.Key;
           return found;
         }
 
@@ -65,11 +64,10 @@ namespace Genetic
           res
           // .Where((kvp) => kvp.Value >= previousMax)
           .Select((kvp) => kvp.Key).ToList();
-        previousMax = maxTime;
       }
     }
 
-    static Dictionary<Infection, TimeSpan> startRound(Field fieldO, Population infections, Dictionary<Infection, TimeSpan> top)
+    static Dictionary<Infection, Result> startRound(Field fieldO, Population infections, Dictionary<Infection, Result> top)
     {
       Random rnd = new Random();
 
@@ -117,8 +115,7 @@ namespace Genetic
 
         infectionLifeEnded.WaitOne();
 
-        DateTime endTime2 = DateTime.Now;
-        TimeSpan span = endTime2 - startTime;
+        Result singleResult = new Result(field.Step, DateTime.Now - startTime, field.InfectedCount, field.DeadCount);
         // Console.WriteLine("{0} : {1}: End : Lifespan: {2}", endTime2.ToString(), inf.Id.ToString(), span);
 
         lock (top)
@@ -129,21 +126,21 @@ namespace Genetic
             {
               // Replacing worst top entry
 
-              IEnumerable<KeyValuePair<Infection, TimeSpan>> foundInTop = top.Where(((kvp) => kvp.Value < span));
+              IEnumerable<KeyValuePair<Infection, Result>> foundInTop = top.Where(((kvp) => kvp.Value.CompareTo(singleResult) <= 0));
               int count = foundInTop.Count();
               if (count > 0)
               {
                 int idx = rnd.Next(0, count - 1);
-                KeyValuePair<Infection, TimeSpan> found = foundInTop.ElementAt(idx);
+                KeyValuePair<Infection, Result> found = foundInTop.ElementAt(idx);
                 top.Remove(found.Key);
-                top[inf] = span;
+                top[inf] = singleResult;
               }
             }
             else
             {
               // Top is not filled yet - just adding
 
-              top[inf] = span;
+              top[inf] = singleResult;
             }
           }
 
@@ -159,10 +156,10 @@ namespace Genetic
 
       Console.Clear();
       Console.WriteLine("Top {0}:", DateTime.Now.ToString());
-      foreach (KeyValuePair<Infection, TimeSpan> kvp in top)
+      foreach (KeyValuePair<Infection, Result> kvp in top)
       {
         Console.WriteLine(kvp.Key);
-        Console.WriteLine("\t{0}", kvp.Value);
+        Console.WriteLine("\t{0}", kvp.Value.ToString());
       }
 
       return top;
