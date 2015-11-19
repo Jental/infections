@@ -22,7 +22,8 @@ namespace InfectionsLib
 
     public static int ofSpread(Infection inf, double distance)
     {
-        return inf.Size; // * 2 + (int)Math.Ceiling(inf.Size * 0.5 * distance);
+      // return inf.Size;
+      return inf.Size * 2 + (int)Math.Ceiling(inf.Size * 0.5 * distance);
     }
   }
 }
