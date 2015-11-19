@@ -55,7 +55,8 @@ namespace Infections
         Aggression = 12,
         SpreadSpeed = 3,
         SpreadDistance = 1,
-        SpreadArea = 1
+        SpreadArea = 1,
+        StrengthPref = 0.75f
       };
       InfectionSpeciman s1 = new InfectionSpeciman(inf1);
       this.infections.Add(inf1, Color.Red);
@@ -70,7 +71,8 @@ namespace Infections
         Aggression = 9,
         SpreadSpeed = 5,
         SpreadDistance = 2,
-        SpreadArea = 2
+        SpreadArea = 2,
+        StrengthPref = 0.75f
       };
       this.infections.Add(inf2, Color.Green);
       InfectionSpeciman s2 = new InfectionSpeciman(inf2);
@@ -85,7 +87,8 @@ namespace Infections
         Aggression = 5,
         SpreadSpeed = 5,
         SpreadDistance = 1,
-        SpreadArea = 1
+        SpreadArea = 1,
+        StrengthPref = 0.75f
       };
       this.infections.Add(inf3, Color.DarkOrange);
       InfectionSpeciman s3 = new InfectionSpeciman(inf3);

@@ -32,7 +32,7 @@ namespace InfectionsLib
         yield return (T)item;
     }
 
-    public static IEnumerable<T> ShuffleNeighbours<T>(this IEnumerable<T> olist, Func<T, int> getHealth, double strengthPref)
+    public static IEnumerable<T> ShuffleNeighbours<T>(this IEnumerable<T> olist, Func<T, int> getHealth, float strengthPref)
     {
       if (olist.Count() == 0) {
         return olist;

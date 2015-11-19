@@ -244,7 +244,7 @@ namespace InfectionsLib
                     List<KeyValuePair<Victim, double>> nb = 
                       this.getNeighbours(i, j, inf.Type.SpreadDistance)
                           .Where((v1) => !v1.Key.IsInfected && !v1.Key.IsDead && v1.Key.Health <= inf.Type.Size * Consumption.POWER)
-                          .ShuffleNeighbours((kvp) => kvp.Key.Health, 0.75)
+                          .ShuffleNeighbours((kvp) => kvp.Key.Health, inf.Type.StrengthPref)
                           .ToList();
                     for (int k = 0; k < inf.Type.SpreadArea; k++)
                     {

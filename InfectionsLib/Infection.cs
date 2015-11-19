@@ -15,6 +15,8 @@ namespace InfectionsLib
     private int aggression = 1;
     private int spreadDistance = 1;
     private int spreadArea = 1;
+    private int spreadSpeed = 1;
+    private float strengthPref = 0.5f;
     private Guid id = Guid.NewGuid();
 
     [OnDeserializing]
@@ -43,7 +45,6 @@ namespace InfectionsLib
       get { return aggression; }
       set { aggression = value; }
     }
-    private int spreadSpeed = 1;
 
     [DataMember]
     public int SpreadSpeed
@@ -64,6 +65,13 @@ namespace InfectionsLib
     {
       get { return spreadArea; }
       set { spreadArea = value; }
+    }
+
+    [DataMember]
+    public float StrengthPref
+    {
+      get { return this.strengthPref; }
+      set { this.strengthPref = value; }
     }
 
     [IgnoreDataMember]
@@ -87,20 +95,22 @@ namespace InfectionsLib
         && this.storeSize == casted.storeSize
         && this.spreadArea == casted.spreadArea
         && this.spreadDistance == casted.spreadDistance
-        && this.spreadSpeed == casted.spreadSpeed;
+        && this.spreadSpeed == casted.spreadSpeed
+        && this.strengthPref == casted.strengthPref;
     }
 
     public override string ToString()
     {
       return String.Format(
-        "{{Id: {0}, Size: {1}, StoreSize: {2}, Aggression: {3}, SpreadSpeed: {4}, SpreadDistance: {5}, SpreadArea: {6}}}",
+        "{{Id: {0}, Size: {1}, StoreSize: {2}, Aggression: {3}, SpreadSpeed: {4}, SpreadDistance: {5}, SpreadArea: {6}, StrengthPref: {7}}}",
         this.id,
         this.Size,
         this.StoreSize,
         this.Aggression,
         this.SpreadSpeed,
         this.SpreadDistance,
-        this.SpreadArea
+        this.SpreadArea,
+        this.StrengthPref
         );
     }
 

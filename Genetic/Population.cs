@@ -19,7 +19,7 @@ namespace Genetic
     private const int MIN_SPREADAREA = 0;
     private const int MAX_SPREADAREA = 50;
     private const int MIN_SPREADDISTANCE = 0;
-    private const int MAX_SPREADDISTANCE = 2;
+    private const int MAX_SPREADDISTANCE = 10;
     private const int MIN_SPREADSPEED = 1;
     private const int MAX_SPREADSPEED = 50;
     private const int MIN_STORESIZE = 0;
@@ -76,7 +76,8 @@ namespace Genetic
           SpreadArea = rnd.Next(MIN_SPREADAREA, MAX_SPREADAREA),
           SpreadDistance = rnd.Next(MIN_SPREADDISTANCE, MAX_SPREADDISTANCE),
           SpreadSpeed = rnd.Next(MIN_SPREADSPEED, MAX_SPREADSPEED),
-          StoreSize = rnd.Next(MIN_STORESIZE, MAX_STORESIZE)
+          StoreSize = rnd.Next(MIN_STORESIZE, MAX_STORESIZE),
+          StrengthPref = (float)rnd.NextDouble()
         };
 
         this.Add(inf);
@@ -93,6 +94,7 @@ namespace Genetic
         inf.SpreadDistance =  Math.Min(MAX_SPREADDISTANCE, Math.Max(MIN_SPREADDISTANCE, inf.SpreadDistance + getRandomDiff()));
         inf.SpreadSpeed = Math.Min(MAX_SPREADSPEED, Math.Max(MIN_SPREADSPEED, inf.SpreadSpeed +  getRandomDiff()));
         inf.StoreSize = Math.Min(MAX_STORESIZE, Math.Max(MIN_STORESIZE, inf.StoreSize +  getRandomDiff()));
+        inf.StrengthPref = Math.Min(1f, Math.Max(0f, inf.StrengthPref + getRandomFloatDiff()));
       }
     }
 
@@ -100,7 +102,7 @@ namespace Genetic
     {
       int coeff = 1;
       int maxDiff = 8;
-      int maxRnd = (int)Math.Pow(2, maxDiff + 1) - 1;
+      int maxRnd = (int)Math.Pow(2, maxDiff) - 1;
 
       BitArray b = new BitArray(new byte[] { (byte)Math.Floor((double)(rnd.Next(0, maxRnd) / coeff)) });
       IEnumerable<bool> casted = b.Cast<bool>();
@@ -119,6 +121,14 @@ namespace Genetic
       }
 
       return this.rnd.Next(-8, 8);
+    }
+
+    private float getRandomFloatDiff()
+    {
+      float maxDiff = 0.5f;
+      int maxIntDiff = 8;
+
+      return getRandomDiff() * maxDiff / maxIntDiff;
     }
 
     private IEnumerable<Infection> crossover(IEnumerable<Infection> infections)
@@ -172,7 +182,8 @@ namespace Genetic
         SpreadArea = (rnd.Next(0, 1) == 0) ? inf0.SpreadArea : inf1.SpreadArea,
         SpreadDistance = (rnd.Next(0, 1) == 0) ? inf0.SpreadDistance : inf1.SpreadDistance,
         SpreadSpeed = (rnd.Next(0, 1) == 0) ? inf0.SpreadSpeed : inf1.SpreadSpeed,
-        StoreSize = (rnd.Next(0, 1) == 0) ? inf0.StoreSize : inf1.StoreSize
+        StoreSize = (rnd.Next(0, 1) == 0) ? inf0.StoreSize : inf1.StoreSize,
+        StrengthPref = (rnd.Next(0, 1) == 0) ? inf0.StrengthPref : inf1.StrengthPref
       };
     }
 
@@ -190,6 +201,7 @@ namespace Genetic
       int mSpreadDistance = (inf0.SpreadDistance + inf1.SpreadDistance) / 2;
       int mSpreadSpeed = (inf0.SpreadSpeed + inf1.SpreadSpeed) / 2;
       int mStoreSize = (inf0.StoreSize + inf1.StoreSize) / 2;
+      float mStrengthPref = (inf0.StrengthPref + inf1.StrengthPref) / 2;
 
       return new Infection()
       {
@@ -198,7 +210,8 @@ namespace Genetic
         SpreadArea = (Math.Abs(inf0.SpreadArea - mSpreadArea) < Math.Abs(inf1.SpreadArea - mSpreadArea)) ? inf0.SpreadArea : inf1.SpreadArea,
         SpreadDistance = (Math.Abs(inf0.SpreadDistance - mSpreadDistance) < Math.Abs(inf1.SpreadDistance - mSpreadDistance)) ? inf0.SpreadDistance : inf1.SpreadDistance,
         SpreadSpeed = (Math.Abs(inf0.SpreadSpeed - mSpreadSpeed) < Math.Abs(inf1.SpreadSpeed - mSpreadSpeed)) ? inf0.SpreadSpeed : inf1.SpreadSpeed,
-        StoreSize = (Math.Abs(inf0.StoreSize - mStoreSize) < Math.Abs(inf1.StoreSize - mStoreSize)) ? inf0.StoreSize : inf1.StoreSize
+        StoreSize = (Math.Abs(inf0.StoreSize - mStoreSize) < Math.Abs(inf1.StoreSize - mStoreSize)) ? inf0.StoreSize : inf1.StoreSize,
+        StrengthPref = (Math.Abs(inf0.StrengthPref - mStrengthPref) < Math.Abs(inf1.StrengthPref - mStrengthPref)) ? inf0.StrengthPref : inf1.StrengthPref
       };
     }
   }
