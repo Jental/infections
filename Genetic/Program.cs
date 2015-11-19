@@ -69,8 +69,6 @@ namespace Genetic
 
     static Dictionary<Infection, Result> startRound(Field fieldO, Population infections, Dictionary<Infection, Result> top)
     {
-      Random rnd = new Random();
-
       AutoResetEvent allEnded = new AutoResetEvent(false);
       int counter = 0;
 
@@ -126,12 +124,11 @@ namespace Genetic
             {
               // Replacing worst top entry
 
-              IEnumerable<KeyValuePair<Infection, Result>> foundInTop = top.Where(((kvp) => kvp.Value.CompareTo(singleResult) <= 0));
+              IEnumerable<KeyValuePair<Infection, Result>> foundInTop = top.Where(((kvp) => kvp.Value.CompareTo(singleResult) <= 0)).OrderBy((kvp) => kvp.Value);
               int count = foundInTop.Count();
               if (count > 0)
               {
-                int idx = rnd.Next(0, count - 1);
-                KeyValuePair<Infection, Result> found = foundInTop.ElementAt(idx);
+                KeyValuePair<Infection, Result> found = foundInTop.ElementAt(0);
                 top.Remove(found.Key);
                 top[inf] = singleResult;
               }

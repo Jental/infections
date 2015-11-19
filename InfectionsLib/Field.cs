@@ -239,7 +239,7 @@ namespace InfectionsLib
                   Logger.Instance.Add("infection", inf.GetHashCode().ToString(), "Spent on store: " + Consumption.ofStore(inf.Type));
 
                   inf.SpreadCounter++;
-                  if (!inf.IsDead && inf.IsSpreadTime) // infecting random neighbours
+                  if (!inf.IsDead && inf.IsSpreadTime)
                   {
                     List<KeyValuePair<Victim, double>> nb = 
                       this.getNeighbours(i, j, inf.Type.SpreadDistance)

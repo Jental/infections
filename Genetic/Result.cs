@@ -35,7 +35,7 @@ namespace Genetic
       if (casted == null)
         throw new ArgumentException("Object is not Result");
 
-      if (this.infected == 4 && casted.infected > 4)
+      if (this.infected == 4 && casted.infected > 4) // 4 - haven't spreaded at all - so we consider them failed
       {
         return -1;
       }
@@ -47,7 +47,19 @@ namespace Genetic
       // return this.steps.CompareTo(casted.steps);
       // return this.infected.CompareTo(casted.infected);
       // return this.infected.CompareTo(casted.killed);
-      return this.steps.CompareTo(casted.steps);
+      // return this.steps.CompareTo(casted.steps);
+
+      int result = this.steps.CompareTo(casted.steps);
+      if (result != 0)
+        return result;
+      else
+      {
+        result = this.infected.CompareTo(casted.infected);
+        if (result != 0)
+          return result;
+        else
+          return this.time.CompareTo(casted.time);
+      }
     }
   }
 }
